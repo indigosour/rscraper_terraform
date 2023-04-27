@@ -1,16 +1,11 @@
-output "kubeconfig_path" {
-  value       = local_file.kubeconfig.filename
-  description = "Path to the kubeconfig file."
+output "kube_host" {
+  value = azurerm_kubernetes_cluster.this.kube_config.0.host
 }
 
-output "azurerm_kubernetes_cluster_this" {
-  value = azurerm_kubernetes_cluster.this
+output "kube_client_certificate" {
+  value = azurerm_kubernetes_cluster.this.kube_config.0.client_certificate
 }
 
-output "kubernetes_namespace_rabbitmq" {
-  value = kubernetes_namespace.rabbitmq
-}
-
-output "kubernetes_namespace_mariadb" {
-  value = kubernetes_namespace.mariadb
+output "kube_client_key" {
+  value = azurerm_kubernetes_cluster.this.kube_config.0.client_key
 }

@@ -7,18 +7,6 @@ provider "azurerm" {
 ######################## Variables #############################
 ################################################################
 
-resource "kubernetes_namespace" "rabbitmq" {
-  metadata {
-    name = "rabbitmq"
-  }
-}
-
-resource "kubernetes_namespace" "mariadb" {
-  metadata {
-    name = "mariadb"    
-  }
-}
-
 locals {cluster_name = "prodk8"}
 
 resource "azurerm_resource_group" "this" {
@@ -54,12 +42,6 @@ resource "azurerm_kubernetes_cluster" "this" {
   }
 }
 
-resource "local_file" "kubeconfig" {
-  depends_on = [azurerm_kubernetes_cluster.this]
-  filename = "kubeconfig.yaml"
-  content  = azurerm_kubernetes_cluster.this.kube_config_raw
-}
-
 
 ################################################################
 ####################### AKS NET CONFIG #########################
@@ -93,5 +75,3 @@ resource "local_file" "kubeconfig" {
 #   allow_virtual_network_access = true
 #   allow_forwarded_traffic = false
 # }
-
-

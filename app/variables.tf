@@ -38,19 +38,32 @@ variable "docker_password" {
   type        = string
 }
 
-variable "azurerm_kubernetes_cluster_this" {
-  type = any
+variable "kubernetes_namespace_mariadb" {
+  description = "The Kubernetes namespace for MariaDB"
+  type        = string
 }
 
 variable "kubernetes_namespace_rabbitmq" {
-  type = any
-}
-
-variable "kubernetes_namespace_mariadb" {
-  type = any
+  description = "The Kubernetes namespace for RabbitMQ"
+  type        = string
 }
 
 variable "azkv_resource_group_name" {
   description = "Resource group name"
+  type        = string
+}
+
+variable "kube_host" {
+  description = "kube_host from the cluster module"
+  type        = string
+}
+
+variable "kube_client_certificate" {
+  description = "kube_client_certificate from the cluster module"
+  type        = string
+}
+
+variable "kube_client_key" {
+  description = "kube_client_key from the cluster module"
   type        = string
 }
