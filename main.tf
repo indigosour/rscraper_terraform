@@ -6,15 +6,16 @@ module "cluster" {
 }
 
 module "app" {
-  source      = "./app"
+  source      = "./app" 
+  depends_on = [
+    module.cluster
+  ]
 
   # Kubernetes cluster configuration
   kube_host     = module.cluster.kube_host
   kube_client_certificate = module.cluster.kube_client_certificate
   kube_client_key = module.cluster.kube_client_key
-  kubernetes_namespace_mariadb = "mariadb"
-  kubernetes_namespace_rabbitmq = "rabbitmq" 
-
+  
   # Azure configuration
   azure_client_secret = var.azure_client_secret
   azure_client_id = var.azure_client_id

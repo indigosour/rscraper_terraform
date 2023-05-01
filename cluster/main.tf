@@ -1,13 +1,6 @@
-provider "azurerm" {
-  features {}
-}
-
-
 ################################################################
 ######################## Variables #############################
 ################################################################
-
-locals {cluster_name = "prodk8"}
 
 resource "azurerm_resource_group" "this" {
   name     = "rscraper_prod"
@@ -20,10 +13,10 @@ resource "azurerm_resource_group" "this" {
 ################################################################
 
 resource "azurerm_kubernetes_cluster" "this" {
-  name                = local.cluster_name
+  name                = var.cluster_name
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
-  dns_prefix          = local.cluster_name
+  dns_prefix          = var.cluster_name
 
   default_node_pool {
     name       = "default"
@@ -38,7 +31,7 @@ resource "azurerm_kubernetes_cluster" "this" {
 
   tags = {
     Terraform = "true"
-    Environment = "prod"
+    Environment = var.environment
   }
 }
 

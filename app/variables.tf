@@ -38,16 +38,6 @@ variable "docker_password" {
   type        = string
 }
 
-variable "kubernetes_namespace_mariadb" {
-  description = "The Kubernetes namespace for MariaDB"
-  type        = string
-}
-
-variable "kubernetes_namespace_rabbitmq" {
-  description = "The Kubernetes namespace for RabbitMQ"
-  type        = string
-}
-
 variable "azkv_resource_group_name" {
   description = "Resource group name"
   type        = string

@@ -1,41 +1,3 @@
-provider "kubernetes" {
-  host                   = var.kube_host
-  client_certificate     = base64decode(var.kube_client_certificate)
-  client_key             = base64decode(var.kube_client_key)
-  insecure         = "true"
-}
-
-provider "azurerm" {
-  features {}
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = var.kube_host
-    client_certificate     = base64decode(var.kube_client_certificate)
-    client_key             = base64decode(var.kube_client_key)
-    insecure         = "true"
-  }
-}
-
-
-################################################################
-######################## Variables #############################
-################################################################
-
-resource "kubernetes_namespace" "rabbitmq" {
-  metadata {
-    name = var.kubernetes_namespace_rabbitmq
-  }
-}
-
-resource "kubernetes_namespace" "mariadb" {
-  metadata {
-    name = var.kubernetes_namespace_mariadb
-  }
-}
-
-
 ################################################################
 ######################### Secrets ##############################
 ################################################################
@@ -63,7 +25,7 @@ resource "kubernetes_secret" "rscraper_env" {
   depends_on = []
   metadata {
     name = "rscraper-env"
-    namespace = "default"
+    namespace = kubernetes_namespace.rscraper.metadata[0].name
   }
 
   data = {
@@ -93,11 +55,17 @@ resource "kubernetes_secret" "regcred" {
 ############# Deploy application dependancies ##################
 ################################################################
 
+resource "kubernetes_namespace" "rscraper" {
+  metadata {
+    name = "rscraper"
+  }
+}
+
 resource "helm_release" "rabbitmq" {
   name       = "rabbitmq"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "rabbitmq"
-  namespace = var.kubernetes_namespace_rabbitmq
+  namespace = kubernetes_namespace.rscraper.metadata[0].name
 
   set {
     name  = "persistence.enabled"
@@ -124,7 +92,7 @@ resource "helm_release" "mariadb" {
   name       = "mariadb"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "mariadb"
-  namespace = var.kubernetes_namespace_mariadb
+  namespace = kubernetes_namespace.rscraper.metadata[0].name
 
   set {
     name  = "primary.persistence.enabled"
@@ -173,6 +141,7 @@ resource "kubernetes_manifest" "rscraper_conductor_deployment" {
     "kind"       = "Deployment"
     "metadata" = {
       "name" = "rscraper-conductor"
+      "namespace" = kubernetes_namespace.rscraper.metadata[0].name
     }
     "spec" = {
       "replicas" = 1
@@ -229,6 +198,7 @@ resource "kubernetes_manifest" "rscraper_conductor_service" {
     "kind"       = "Service"
     "metadata" = {
       "name" = "rscraper-conductor-service"
+      "namespace" = kubernetes_namespace.rscraper.metadata[0].name
     }
     "spec" = {
       "selector" = {
@@ -258,6 +228,7 @@ resource "kubernetes_manifest" "rscraper_worker_deployment" {
     "kind"       = "Deployment"
     "metadata" = {
       "name" = "rscraper-worker"
+      "namespace" = kubernetes_namespace.rscraper.metadata[0].name
     }
     "spec" = {
       "replicas" = 4
